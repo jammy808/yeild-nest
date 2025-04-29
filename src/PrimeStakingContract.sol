@@ -1,15 +1,24 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity  ^0.8.0;
+pragma solidity  ^0.8.13;
 
 contract PrimeStakingContract {
 
     address public implementation;
+    address public admin;
 
-    constructor ( ) {
+    constructor (address _implementation) {
+        implementation = _implementation;
+        admin = msg.sender;
+    }
 
+    function upgrade(address newImplementation) external {
+        require(msg.sender == admin , "Only Admin");
+        implementation = newImplementation;
     }
 
     fallback() external payable {
+        require(implementation != address(0) , "No implementation set");
+
         (bool success , ) = implementation.delegatecall(msg.data);
         require(success , "Delegate Call Failed");
     }
