@@ -10,7 +10,9 @@ contract PrimeStakingContract {
     }
 
     fallback() external payable {
-        (bool success , bytes memory data) = implementation.delegatecall(msg.data);
+        (bool success , ) = implementation.delegatecall(msg.data);
         require(success , "Delegate Call Failed");
     }
+
+    receive() external payable {}
 }
