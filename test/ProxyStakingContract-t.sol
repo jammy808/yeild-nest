@@ -11,8 +11,9 @@ contract ProxyStakingContractTest is Test {
     ProxyStakingContract public proxy;
     StakingContract_1 public implementation;
     JamCoin public token;
+    StakingContract_1 public stakeProxy;
 
-    address user = address(1);
+    address user = address(0x3D311138b4439d5fba06b96F3aD30a8f944242C2);
 
     function setUp() public {
         token = new JamCoin(address(this));
@@ -23,5 +24,44 @@ contract ProxyStakingContractTest is Test {
         StakingContract_1(address(proxy)).initialize(address(token));
 
         token.updateContract(address(proxy));
+        stakeProxy = StakingContract_1(address(proxy));
+    }
+
+    function testUnstake() public {
+        uint value = 10 ether;
+
+        vm.deal(user, 20 ether);
+
+        vm.startPrank(user);
+        stakeProxy.stake{value: value}(value);
+        assertEq(address(proxy).balance, value);
+        console.log("balance:", address(proxy).balance);
+        stakeProxy.unstake(5 ether);
+        console.log("user balance:", user.balance); // gets me 15 , test is reverting for some reason , will try in remix
+        vm.stopPrank();
+
+        assertEq(stakeProxy.totalStake(), 0);
+        assertEq(user.balance, 15 ether);
+    }
+
+    function testFailStake() public {
+        uint value = 10 ether;
+        stakeProxy.stake{value : value}(value);
+        stakeProxy.unstake(value);
+    }
+
+    function testGetRewards() public {
+        vm.deal(user, 10 ether);
+        vm.prank(user);
+
+        stakeProxy.stake{value: 1 ether}(1 ether);
+
+        skip(10);
+
+        vm.prank(user);
+        stakeProxy.claimRewards();
+
+        uint balance = token.balanceOf(user);
+        assertEq(balance, 1 ether * 10);
     }
 }
