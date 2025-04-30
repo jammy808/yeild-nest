@@ -69,7 +69,8 @@ contract StakingContract_1 {
         user.stakedAmount -= _amount;
         totalStake -= _amount;
 
-        payable(msg.sender).transfer(_amount);
+        (bool success, ) = payable(msg.sender).call{value: _amount}("");
+        require(success, "Transfer failed");
     }
 
     function claimRewards() public {
