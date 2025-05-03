@@ -19,8 +19,12 @@ contract ProxyStakingContract {
     fallback() external payable {
         require(implementation != address(0) , "No implementation set");
 
-        (bool success , ) = implementation.delegatecall(msg.data);
-        require(success , "Delegate Call Failed");
+        (bool success, bytes memory data) = implementation.delegatecall(msg.data);
+        require(success, "Delegate Call Failed");
+
+        assembly {
+            return(add(data, 0x20), mload(data))
+        }
     }
 
     receive() external payable {}

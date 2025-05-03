@@ -40,7 +40,7 @@ contract ProxyStakingContractTest is Test {
         console.log("user balance:", user.balance); // gets me 15 , test is reverting for some reason , will try in remix
         vm.stopPrank();
 
-        assertEq(stakeProxy.totalStake(), 0);
+        assertEq(stakeProxy.totalStake(), 5 ether);
         assertEq(user.balance, 15 ether);
     }
 
