@@ -13,7 +13,7 @@ contract StakingContract_1 {
     bool private _initialized;
 
     uint public totalStake;
-    uint256 public constant REWARD_PER_SEC_PER_ETH = 1;
+    uint256 public constant REWARD_PER_SEC_PER_ETH = 1e15;
 
     IJamToken public jamToken;
 
@@ -44,7 +44,7 @@ contract StakingContract_1 {
             return;
         }
 
-        uint256 additionalReward = (user.stakedAmount * timeDiff * REWARD_PER_SEC_PER_ETH);
+        uint256 additionalReward = (user.stakedAmount * timeDiff * REWARD_PER_SEC_PER_ETH) / 1e18;
 
         user.rewardDebt += additionalReward;
         user.lastUpdate = block.timestamp;
@@ -86,7 +86,7 @@ contract StakingContract_1 {
             return userInfo[msg.sender].rewardDebt;
         }
 
-        return(userInfo[msg.sender].stakedAmount* timeDiff * REWARD_PER_SEC_PER_ETH
+        return( (userInfo[msg.sender].stakedAmount* timeDiff * REWARD_PER_SEC_PER_ETH) / 1e18
         + userInfo[msg.sender].rewardDebt);
     }
 }
