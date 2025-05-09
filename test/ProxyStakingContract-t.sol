@@ -54,14 +54,14 @@ contract ProxyStakingContractTest is Test {
         vm.deal(user, 10 ether);
         vm.prank(user);
 
-        stakeProxy.stake{value: 1 ether}(1 ether);
+        stakeProxy.stake{value: 2 ether}(2 ether);
 
-        skip(10);
+        skip(86400);
 
         vm.prank(user);
         stakeProxy.claimRewards();
 
         uint balance = token.balanceOf(user);
-        assertEq(balance, 1 ether * 10);
+        assertEq(balance, 2 * 86400 * 1e15);
     }
 }
